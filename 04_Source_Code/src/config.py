@@ -62,15 +62,19 @@ class ModelSettings:
     either, and swapping is an environment variable rather than a code change.
     """
 
-    provider: str = field(default_factory=lambda: _env("LLM_PROVIDER", "openrouter"))
-    api_key: str = field(default_factory=lambda: _env("OPENROUTER_API_KEY", ""))
+    provider: str = field(default_factory=lambda: _env("LLM_PROVIDER", "groq"))
+    # Either key name works. The pack's own template uses OPENROUTER_API_KEY,
+    # so that name is kept for compatibility, but GROQ_API_KEY is accepted
+    # too because writing a Groq key into a variable called OPENROUTER_ is
+    # the kind of small confusion that wastes an evening.
+    api_key: str = field(
+        default_factory=lambda: _env("GROQ_API_KEY", "") or _env("OPENROUTER_API_KEY", "")
+    )
     base_url: str = field(
-        default_factory=lambda: _env(
-            "LLM_BASE_URL", "https://openrouter.ai/api/v1"
-        )
+        default_factory=lambda: _env("LLM_BASE_URL", "https://api.groq.com/openai/v1")
     )
     model: str = field(
-        default_factory=lambda: _env("LLM_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
+        default_factory=lambda: _env("LLM_MODEL", "llama-3.3-70b-versatile")
     )
     # Temperature zero is not a style choice. Acceptance criterion A5 requires
     # the same input to produce the same routing decision, and a non-zero

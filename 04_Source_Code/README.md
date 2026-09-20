@@ -53,27 +53,38 @@ the output directory you name.
 
 ## Getting a model provider key
 
-The system needs one API key and nothing else. Both supported providers are free.
+The system needs one API key and nothing else. It is free.
 
-**OpenRouter** (default). Sign up at <https://openrouter.ai>, open Keys, create a key, and
-put it in `.env` as `OPENROUTER_API_KEY`. The default model is
-`meta-llama/llama-3.3-70b-instruct:free`.
+**Groq** (default, recommended). Sign up at <https://console.groq.com>, create a key, and put
+it in `.env` as `GROQ_API_KEY`. Nothing else to change.
 
-**Groq** (alternative, faster). Sign up at <https://console.groq.com>, create a key, and set
-these three values in `.env`:
+Groq is the default rather than OpenRouter because OpenRouter retired the free Llama 3.3 70B
+during this build — the `:free` slug now returns a 404 pointing at the paid model — and
+because latency is an assessed target. Groq serves Llama 3.3 70B at roughly 280 tokens per
+second, and `llama-3.1-8b-instant` at about 560. Each ticket makes two or three sequential
+model calls, so that difference decides whether the 95th-percentile latency target is within
+reach.
+
+**OpenRouter** works too, but check <https://openrouter.ai/models?q=free> for what is actually
+free on the day you run it, because the list changes. Then set:
 
 ```
-OPENROUTER_API_KEY=<your groq key>
-LLM_BASE_URL=https://api.groq.com/openai/v1
-LLM_MODEL=llama-3.3-70b-versatile
+OPENROUTER_API_KEY=<your key>
+LLM_BASE_URL=https://openrouter.ai/api/v1
+LLM_MODEL=<a model carrying the :free suffix today>
 ```
+
+Either variable name is accepted. The pack's own template uses `OPENROUTER_API_KEY`, so that
+name still works whichever provider you point at.
+
+**A model without the `:free` suffix will bill you.** The build specification says the project
+is designed to cost nothing and that no part of the marking advantages a student who pays for
+extra capacity. Check your model id before a long run.
 
 **Running with no key at all works**, and is worth trying once. The system detects that the
-provider is unreachable, switches to its deterministic path, classifies and routes every
-ticket using rules and lexical retrieval, escalates all of them with full context packages,
-and completes the run. See [When the provider is unavailable](#when-the-provider-is-unavailable).
-
----
+provider is unreachable, switches to its deterministic path, classifies and routes every ticket
+using rules and lexical retrieval, escalates all of them with full context packages, and
+completes the run. See [When the provider is unavailable](#when-the-provider-is-unavailable).
 
 ## What this is, and why it is not a chatbot
 
