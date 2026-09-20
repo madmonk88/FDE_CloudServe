@@ -249,7 +249,11 @@ def save(model: AnswerabilityModel, path: Path | None = None) -> Path:
 
 
 def load(path: Path | None = None) -> AnswerabilityModel | None:
-    path = Path(path or get_settings().paths.storage_dir / "answerability.json")
+    settings = get_settings()
+    path = Path(path or settings.paths.storage_dir / "answerability.json")
+    if not path.exists():
+        # Committed fallback, for a clean checkout where storage/ is empty.
+        path = settings.paths.root / "fitted" / "answerability.json"
     if not path.exists():
         return None
     try:

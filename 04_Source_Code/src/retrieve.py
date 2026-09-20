@@ -362,9 +362,27 @@ class Retriever:
                 [query], normalize_embeddings=True, show_progress_bar=False
             )
             sims = (self._matrix @ np.asarray(q, dtype="float32").T).ravel()
-            # Cosine similarity on normalised vectors is in [-1, 1]; map to
-            # [0, 1] so that the two score families are commensurable.
-            dense = [float((s + 1.0) / 2.0) for s in sims]
+            # Cosine similarity, clamped at zero. NOT rescaled from [-1, 1]
+            # to [0, 1].
+            #
+            # The rescaling (cos + 1) / 2 looks harmless and destroys the
+            # relevance floor. Sentence embeddings put unrelated text at a
+            # cosine of roughly 0.0-0.1, which the rescaling lifts to
+            # 0.50-0.55 — so EVERY passage, for every query, scored above any
+            # threshold worth setting, and retrieval returned five passages
+            # for questions the corpus had nothing to say about. The build
+            # specification lists exactly that under what does not count as
+            # working: "Retrieval that returns something for every query
+            # regardless of relevance."
+            #
+            # It was caught by test_a4_threshold_returns_nothing_for_an
+            # _irrelevant_query, which had been passing only because dense
+            # retrieval was unavailable in the environment where the
+            # threshold was first set. Negative cosines mean "actively
+            # dissimilar", which is not more useful than "unrelated", so they
+            # clamp to zero rather than going negative and dragging a hybrid
+            # score below a lexical match that is genuinely relevant.
+            dense = [max(0.0, float(s)) for s in sims]
             w = self.cfg.hybrid_dense_weight
         else:
             dense = [0.0] * len(self.chunks)

@@ -44,11 +44,32 @@ URGENCIES = ["low", "medium", "high", "critical"]
 
 
 def _taxonomy_path() -> Path:
+    """Where the taxonomy is written by scripts/build_taxonomy.py."""
     return get_settings().paths.storage_dir / "taxonomy.json"
 
 
-def load_taxonomy() -> dict[str, str]:
+def _taxonomy_source() -> Path:
+    """Where to READ the taxonomy from.
+
+    `storage/` first, because that is where a fresh fit lands. Then
+    `fitted/`, which is committed to the repository.
+
+    That second location matters more than it looks. `storage/` is
+    gitignored, so on a clean checkout it is empty — and an assessor
+    following the README is not going to run the fitting scripts first.
+    Without this fallback the system silently classifies into the built-in
+    placeholder categories instead of the 22 the data is labelled with, which
+    does not crash, does not warn loudly enough, and scores near zero on
+    precision. It happened on the first live run.
+    """
     path = _taxonomy_path()
+    if path.exists():
+        return path
+    return get_settings().paths.root / "fitted" / "taxonomy.json"
+
+
+def load_taxonomy() -> dict[str, str]:
+    path = _taxonomy_source()
     if path.exists():
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
@@ -59,6 +80,13 @@ def load_taxonomy() -> dict[str, str]:
                 return {i: "" for i in intents}
         except Exception as exc:  # pragma: no cover
             log.warning("taxonomy file unreadable (%s); using fallback", exc)
+    log.warning(
+        "NO TAXONOMY FILE FOUND (looked in storage/ and fitted/). Falling back "
+        "to %d placeholder categories, which will NOT match the labels in the "
+        "evaluation data and will score near zero on intent precision. "
+        "Run: python -m scripts.build_taxonomy",
+        len(FALLBACK_INTENTS),
+    )
     return dict(FALLBACK_INTENTS)
 
 

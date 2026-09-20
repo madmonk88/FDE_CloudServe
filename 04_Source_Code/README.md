@@ -378,6 +378,7 @@ scripts/
   verify_setup.py       check the environment before relying on it
   build_taxonomy.py     derive the intent categories from the labels
   derive_policy.py      recover CloudServe's routing policy from expected_route
+  tune_retrieval_floor.py  set the floor below which retrieval returns nothing
   tune_answerability.py fit the answerability model and choose its threshold
   fit_calibration.py    fit the confidence reliability mapping
   tune_thresholds.py    sweep the routing threshold on expected cost
@@ -427,6 +428,25 @@ still completes.
 
 **Everything escalates.** Almost always no API key, or a key the provider rejected. Check
 `GET /health` or the first lines of `run.log`: the system says which path it is on.
+
+**Intent accuracy is near zero and the predicted categories look nothing like the labels.**
+The taxonomy did not load. The system reads it from `storage/taxonomy.json`, falling back to
+the committed copy in `fitted/`; if neither is present it uses placeholder categories that
+cannot match the evaluation labels, and says so loudly in the log. Check the first lines of
+`run.log` for the warning, then run `python -m scripts.build_taxonomy`.
+
+**Retrieval returns five passages for every query, including nonsense, and
+`documentation_gaps.json` is empty.** The relevance floor is set for the wrong score scale.
+The scale differs depending on whether dense retrieval is available, so a floor tuned without
+embeddings is meaningless once they work. Run `python -m scripts.tune_retrieval_floor` and put
+the value it prints in `.env`. Verify afterwards in `metrics.json` under
+`technical.retrieval.returned_nothing` — if it is still zero, the floor is not doing its job.
+
+**95th-percentile latency is well above the 3-second target.** Each ticket makes two or three
+sequential model calls, so per-call latency dominates. A 70B model on a free tier will not meet
+it. Groq is substantially faster than OpenRouter's free tier, and the smaller
+`llama-3.1-8b-instruct` faster still. If you cannot meet the target, report the figure and say
+why rather than omitting it.
 
 **429 from the provider.** Expected on a free tier and handled. Lower `LLM_RPM` in `.env` if
 it persists.

@@ -104,7 +104,10 @@ class RetrievalSettings:
     """
 
     top_k: int = field(default_factory=lambda: _env_int("RETRIEVAL_TOP_K", 5))
-    min_score: float = field(default_factory=lambda: _env_float("RETRIEVAL_MIN_SCORE", 0.30))
+    # On the corrected cosine scale an unrelated passage scores about 0.06
+    # and a good match about 0.35. Tuned against the answerable_from_docs
+    # label by scripts/tune_retrieval_floor.py.
+    min_score: float = field(default_factory=lambda: _env_float("RETRIEVAL_MIN_SCORE", 0.18))
     chunk_target_chars: int = field(
         default_factory=lambda: _env_int("RETRIEVAL_CHUNK_CHARS", 900)
     )
