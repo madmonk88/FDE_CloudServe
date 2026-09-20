@@ -1,0 +1,19 @@
+{
+  "never_automate_intents": [
+    "compliance_request",
+    "feature_request",
+    "security_incident",
+    "unclear_request"
+  ],
+  "high_risk_intents": [
+    "database_issue",
+    "performance_degradation"
+  ],
+  "high_risk_urgency": [
+    "high"
+  ],
+  "verified_on": {
+    "development": 500,
+    "validation": 80
+  }
+}

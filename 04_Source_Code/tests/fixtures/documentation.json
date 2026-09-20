@@ -1,0 +1,32 @@
+[
+  {
+    "doc_id": "kb-auth-001",
+    "title": "Rotating API keys",
+    "url": "https://docs.cloudserve.example/auth/rotating-api-keys",
+    "content": "## Overview\n\nCloudServe API keys are scoped to a single project and do not expire automatically. Rotating a key is the recommended response to a suspected exposure.\n\n## Rotating a key\n\nOpen the project dashboard, select Settings, then API Keys. Choose Rotate next to the key you want to replace. A new key is issued immediately and the previous key continues to work for a grace period of twenty-four hours, so that deployments can be updated without downtime.\n\n## Revoking immediately\n\nIf a key has been published publicly, use Revoke rather than Rotate. Revoke invalidates the key within sixty seconds and does not offer a grace period. Any service still presenting the revoked key will receive a 401 response.\n\n## Grace period behaviour\n\nDuring the twenty-four hour grace period both keys are valid. Requests are attributed to the key that was used, so the audit log will show usage of the old key until every client is updated."
+  },
+  {
+    "doc_id": "kb-rate-002",
+    "title": "Rate limits and 429 responses",
+    "url": "https://docs.cloudserve.example/api/rate-limits",
+    "content": "## Limits by plan\n\nThe Starter plan allows sixty requests per minute per project. The Growth plan allows six hundred. The Enterprise plan is negotiated and is set per contract.\n\n## What a 429 means\n\nA 429 response means the project has exceeded its per-minute allowance. The response carries a Retry-After header giving the number of seconds until the window resets.\n\n## Handling 429 correctly\n\nClients should honour Retry-After rather than retrying immediately. Retrying without backoff extends the throttled window because the rejected requests still count towards the rolling limit. Exponential backoff with jitter is recommended.\n\n## Raising your limit\n\nLimits are raised by changing plan in the billing dashboard. Changes take effect within five minutes. Temporary increases for a launch can be requested through support with at least three working days notice."
+  },
+  {
+    "doc_id": "kb-deploy-003",
+    "title": "Deployment failures and rollback",
+    "url": "https://docs.cloudserve.example/deploy/failures",
+    "content": "## Common causes\n\nA deployment that fails at the build stage is almost always a missing environment variable or a dependency that is not pinned in the manifest. The build log names the missing item on the last line before the failure.\n\n## Rolling back\n\nEvery successful deployment is retained for thirty days. To roll back, open the Deployments tab, find the last successful release and choose Promote. Promotion takes approximately ninety seconds and does not require a rebuild.\n\n## Failed health checks\n\nIf a deployment builds but fails its health check, the previous release remains live and the new release is marked failed. No traffic is ever sent to a release that has not passed its health check."
+  },
+  {
+    "doc_id": "kb-webhook-004",
+    "title": "Configuring webhooks",
+    "url": "https://docs.cloudserve.example/integrations/webhooks",
+    "content": "## Creating a webhook\n\nWebhooks are configured per project under Integrations. A webhook requires an HTTPS endpoint and a shared secret. Plain HTTP endpoints are rejected.\n\n## Signature verification\n\nEvery delivery carries an X-CloudServe-Signature header containing an HMAC SHA-256 digest of the request body, computed with the shared secret. Consumers must verify this signature before acting on a payload.\n\n## Retries\n\nA delivery that does not receive a 2xx response within ten seconds is retried five times with exponential backoff over roughly six hours. After the fifth failure the webhook is marked unhealthy and deliveries are paused until it is re-enabled."
+  },
+  {
+    "doc_id": "kb-billing-005",
+    "title": "Understanding your invoice",
+    "url": "https://docs.cloudserve.example/billing/invoices",
+    "content": "## Billing period\n\nInvoices are issued on the first day of each month and cover the preceding calendar month. Usage is metered hourly and aggregated at the end of the period.\n\n## Line items\n\nCompute is billed per instance hour. Storage is billed per gigabyte-month, averaged across the period rather than at peak. Egress is billed per gigabyte with the first hundred gigabytes each month included at no charge.\n\n## Changing plan mid-period\n\nA plan change is prorated to the day. The invoice will show two lines for the affected period, one at each rate."
+  }
+]

@@ -1,0 +1,8 @@
+{
+  "id": "P-JUDGE-001",
+  "version": "1.0.0",
+  "requirement": "EV-04 (response quality against reference answers)",
+  "purpose": "Score a drafted reply against a senior agent's reference answer.",
+  "notes": "Used only by the evaluation harness, never in the serving path. Its output is reported with the caveat that a model scoring another model's output is a weak instrument; the lexical and citation measures are the primary evidence and this is corroboration.",
+  "template": "You compare a drafted support reply against a reference answer written by a senior human agent.\n\nScore three things from 0 to 5:\n- coverage: does the draft make the points the reference makes?\n- correctness: does the draft contradict the reference or state anything the reference does not support?\n- tone: would a paying customer be satisfied receiving this?\n\nReply with JSON only: {{\"coverage\": <0-5>, \"correctness\": <0-5>, \"tone\": <0-5>, \"note\": \"<one sentence>\"}}"
+}

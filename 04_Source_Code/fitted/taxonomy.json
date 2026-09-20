@@ -1,0 +1,27 @@
+{
+  "intents": {
+    "data_export": "observed 29 times in the development set",
+    "data_residency": "observed 29 times in the development set",
+    "rollback_request": "observed 28 times in the development set",
+    "deployment_failure": "observed 27 times in the development set",
+    "compliance_request": "observed 26 times in the development set",
+    "sso_configuration": "observed 26 times in the development set",
+    "security_incident": "a suspected breach, exposed credential or vulnerability",
+    "database_issue": "observed 26 times in the development set",
+    "api_usage_question": "observed 24 times in the development set",
+    "billing_query": "observed 24 times in the development set",
+    "performance_degradation": "observed 23 times in the development set",
+    "quota_or_overage": "observed 23 times in the development set",
+    "account_access": "login, permissions, API keys, SSO or user management",
+    "onboarding": "observed 22 times in the development set",
+    "integration_help": "observed 21 times in the development set",
+    "webhook_issue": "observed 21 times in the development set",
+    "feature_request": "the customer wants something the product does not do",
+    "authentication_failure": "observed 20 times in the development set",
+    "api_key_issue": "observed 18 times in the development set",
+    "configuration_help": "observed 17 times in the development set",
+    "unclear_request": "observed 15 times in the development set",
+    "rate_limit": "observed 13 times in the development set"
+  },
+  "derived_from": "data/development_tickets.json"
+}

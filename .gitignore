@@ -216,3 +216,27 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------------------
+# Project-specific — added for the CloudServe capstone
+# ---------------------------------------------------------------------------
+
+# Secrets. .env.example is the committed template; .env is yours and never
+# leaves your machine. The submission guide treats any key found in the
+# repository as a serious finding regardless of whether it is still valid.
+.env
+*.pem
+*.key
+
+# Local state produced by runs: the decision log, the vector index, the model
+# response cache and the fitted artefacts are all reproducible from the
+# scripts, so committing them would only create merge noise.
+04_Source_Code/storage/
+04_Source_Code/evaluation/results/
+04_Source_Code/ci-results/
+*.sqlite3
+*.sqlite3-*
+
+# The submission archive is built on demand by
+# 04_Source_Code/scripts/build_submission.py
+*_Capstone_Submission.zip

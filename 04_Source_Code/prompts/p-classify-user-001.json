@@ -1,0 +1,8 @@
+{
+  "id": "P-CLASSIFY-USER-001",
+  "version": "1.0.0",
+  "requirement": "FR-02",
+  "purpose": "Carry the ticket to the classifier without mixing it into the instruction.",
+  "notes": "",
+  "template": "Channel: {channel}\nCustomer tier: {tier}\n\n{wrapped_ticket}"
+}

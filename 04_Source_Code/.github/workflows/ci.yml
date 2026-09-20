@@ -1,0 +1,84 @@
+# Continuous integration.
+#
+# The suite runs with no model provider key, deliberately. That makes CI a
+# standing proof of acceptance criterion A11 — this is what the system does
+# when the provider is gone — and it means the build does not depend on a
+# free tier being available at the moment someone pushes.
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Check for committed credentials
+        # The brief: no credential, key or token may appear anywhere in
+        # committed source. This fails the build rather than trusting a habit.
+        run: |
+          if grep -rInE '(sk-[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----)' \
+               --exclude-dir=.git --exclude-dir=.venv --exclude-dir=storage . ; then
+            echo "::error::a credential-shaped string is present in committed source"
+            exit 1
+          fi
+          if [ -f .env ]; then
+            echo "::error::.env is committed; it must be gitignored"
+            exit 1
+          fi
+          echo "no credentials found in committed source"
+
+      - name: Verify setup
+        run: python -m scripts.verify_setup || true
+
+      - name: Run tests
+        env:
+          OPENROUTER_API_KEY: ""
+        run: python -m pytest tests/ -v --tb=short
+
+      - name: Prove the unattended run works without a provider
+        env:
+          OPENROUTER_API_KEY: ""
+        run: |
+          cp tests/fixtures/documentation.json data/documentation.json
+          python -m evaluation.harness \
+            --input tests/fixtures/tickets.json \
+            --output ci-results/
+          test -f ci-results/metrics.json
+          test -f ci-results/metrics.md
+          python - <<'PY'
+          import json, sys
+          report = json.load(open("ci-results/metrics.json"))
+          assert report["run"]["completed_fully"], "the run did not finish"
+          assert report["reconciliation"]["reconciles"], "the decision log does not reconcile"
+          print("unattended run completed and the decision log reconciles")
+          PY
+
+      - name: Upload run artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: run-results-py${{ matrix.python-version }}
+          path: ci-results/

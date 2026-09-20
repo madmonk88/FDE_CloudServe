@@ -1,0 +1,8 @@
+{
+  "id": "P-ANSWER-USER-001",
+  "version": "1.0.0",
+  "requirement": "FR-05",
+  "purpose": "Carry the ticket to the generator without mixing it into the instruction.",
+  "notes": "",
+  "template": "Channel: {channel}\nDetected intent: {intent}\n\n{wrapped_ticket}"
+}

@@ -1,0 +1,20 @@
+# Pinned so that a clean checkout on someone else's machine installs the same
+# versions this was built and tested against. An unpinned dependency is the
+# most common reason a submission fails to start.
+
+# Core
+httpx==0.28.1
+pydantic==2.13.3
+pydantic-settings==2.14.0
+python-dotenv==1.0.1
+
+# Retrieval
+chromadb==0.5.23
+sentence-transformers==3.3.1
+
+# Interface
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# Tests
+pytest==8.3.4
