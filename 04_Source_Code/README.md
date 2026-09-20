@@ -472,8 +472,17 @@ it. Groq is substantially faster than OpenRouter's free tier, and the smaller
 `llama-3.1-8b-instruct` faster still. If you cannot meet the target, report the figure and say
 why rather than omitting it.
 
-**429 from the provider.** Expected on a free tier and handled. Lower `LLM_RPM` in `.env` if
-it persists.
+**429 from the provider, with very long waits.** A brief throttle is honoured; a Retry-After
+above `LLM_MAX_RETRY_AFTER` (30s by default) is treated as quota exhaustion rather than a
+pause. The system opens the circuit and degrades, so the run finishes with reduced capability
+instead of stalling for hours. Cached model responses are kept, so re-running with `--resume`
+once the quota resets is cheap — usually only the tickets that degraded are re-processed.
+
+If you see this repeatedly you have hit a daily allowance. Either wait for it to reset, or
+switch to a smaller model (`openai/gpt-oss-20b`) whose token cost per ticket is roughly half.
+
+**`getaddrinfo failed` / `ConnectError`.** DNS or connectivity, not the provider. Handled the
+same way — the ticket escalates with context and the run continues.
 
 **The run stopped part way.** Re-run the same command with `--resume`; tickets already in
 `responses.json` are skipped.

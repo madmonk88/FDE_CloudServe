@@ -297,11 +297,39 @@ class LLMClient:
 
                 if response.status_code in _RETRYABLE_STATUS:
                     retry_after = response.headers.get("retry-after")
-                    delay = (
-                        float(retry_after)
-                        if retry_after and retry_after.replace(".", "").isdigit()
-                        else self._backoff(attempt)
-                    )
+                    asked = None
+                    if retry_after and retry_after.replace(".", "").isdigit():
+                        asked = float(retry_after)
+
+                    # A Retry-After longer than the cap is not a pause, it is a
+                    # refusal with a timestamp on it. Free tiers answer a
+                    # daily quota exhaustion with hundreds of seconds, and
+                    # sleeping through that blocks the run for hours while
+                    # looking like progress — a full evaluation was observed
+                    # stalling on waits of 215s, 403s and 541s in sequence.
+                    #
+                    # The right behaviour is the one A11 asks for: stop
+                    # waiting, open the circuit, and let the system degrade to
+                    # its deterministic path so the run completes with reduced
+                    # capability instead of not completing at all. The cached
+                    # work is kept, so a later --resume picks up cheaply once
+                    # the quota resets.
+                    if asked is not None and asked > self.cfg.max_retry_after:
+                        self.breaker.record_failure()
+                        log.warning(
+                            "provider asked for a %.0fs wait, above the %.0fs cap — "
+                            "treating as unavailable and degrading rather than "
+                            "stalling the run",
+                            asked,
+                            self.cfg.max_retry_after,
+                        )
+                        raise ProviderUnavailable(
+                            f"rate limited; provider asked for {asked:.0f}s, "
+                            f"above the {self.cfg.max_retry_after:.0f}s cap"
+                        )
+
+                    delay = asked if asked is not None else self._backoff(attempt)
+                    delay = min(delay, self.cfg.max_retry_after)
                     last_error = ProviderUnavailable(
                         f"provider returned {response.status_code}"
                     )

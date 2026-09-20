@@ -94,6 +94,13 @@ class ModelSettings:
     circuit_breaker_cooldown: float = field(
         default_factory=lambda: _env_float("LLM_CIRCUIT_COOLDOWN", 60.0)
     )
+    # The longest we will ever wait on a provider's Retry-After header.
+    # Beyond this the rate limit is a quota exhaustion rather than a brief
+    # throttle, and waiting it out stalls the run for hours. See the comment
+    # at the use site in llm/provider.py.
+    max_retry_after: float = field(
+        default_factory=lambda: _env_float("LLM_MAX_RETRY_AFTER", 30.0)
+    )
     cache_enabled: bool = field(default_factory=lambda: _env_bool("LLM_CACHE", True))
 
 
