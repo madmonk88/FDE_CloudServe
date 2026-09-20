@@ -77,6 +77,18 @@ LLM_MODEL=<a model carrying the :free suffix today>
 Either variable name is accepted. The pack's own template uses `OPENROUTER_API_KEY`, so that
 name still works whichever provider you point at.
 
+**If a run fails with `model_not_found` or "does not exist", do not go looking for a
+replacement in documentation.** Model catalogues change without notice and provider docs lag
+behind them — both providers did exactly this during the build, and Groq's docs still listed a
+model its own API had stopped serving. Ask your key instead:
+
+```bash
+python -m scripts.list_models --probe --set-env
+```
+
+It prints the models that key can reach, tests the best candidate, and gives you the `.env`
+lines to paste. It works against any OpenAI-compatible provider and cannot be out of date.
+
 **A model without the `:free` suffix will bill you.** The build specification says the project
 is designed to cost nothing and that no part of the marking advantages a student who pays for
 extra capacity. Check your model id before a long run.
@@ -387,6 +399,7 @@ evaluation/
 
 scripts/
   verify_setup.py       check the environment before relying on it
+  list_models.py        ask the provider which models your key can actually run
   build_taxonomy.py     derive the intent categories from the labels
   derive_policy.py      recover CloudServe's routing policy from expected_route
   tune_retrieval_floor.py  set the floor below which retrieval returns nothing

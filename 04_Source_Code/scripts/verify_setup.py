@@ -204,7 +204,21 @@ def main() -> int:
             )
             report(OK, f"model provider answered: {reply.strip()[:40]!r}")
         except ProviderRefused as exc:
-            report(FAIL, "the provider rejected the request", str(exc))
+            detail = str(exc)
+            if "model" in detail.lower() and (
+                "not exist" in detail.lower()
+                or "not_found" in detail.lower()
+                or "unavailable" in detail.lower()
+            ):
+                detail += (
+                    "\n\nThe model id is wrong or your key cannot reach it. Model "
+                    "catalogues\nchange without notice and provider documentation lags "
+                    "behind them, so do\nnot pick a replacement from a web page. Ask "
+                    "your own key instead:\n\n    python -m scripts.list_models --probe "
+                    "--set-env\n\nThat prints exactly what this key can run and the .env "
+                    "lines to use."
+                )
+            report(FAIL, "the provider rejected the request", detail)
         except ProviderUnavailable as exc:
             report(WARN, "the provider could not be reached", str(exc))
         finally:
