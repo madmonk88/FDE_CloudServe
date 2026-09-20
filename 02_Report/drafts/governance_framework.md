@@ -67,6 +67,59 @@ technical: sample audited escalations weekly, and report the sample size.
 
 ---
 
+## 2a. What the evaluation actually found
+
+A risk register written before a system runs is a set of predictions. This section records
+which of them the evaluation confirmed, because a register that is never checked against
+reality is a filing exercise.
+
+**Confirmed, and worse than assessed.**
+
+R06 (stated confidence does not reflect actual accuracy) was rated High before mitigation and
+the mitigation did not fully work. Measured expected calibration error was 0.545 uncalibrated
+and 0.144 after fitting, against a condition of 0.05. The direction is right and the magnitude
+is not. Thirty-one of eighty decisions in the final run used uncalibrated confidence because
+they ran on the degraded path, which has no calibration mapping — a gap in the mitigation that
+was not anticipated when the risk was written.
+
+R05 (quality differs systematically across customer groups) was rated High and the audit found
+gaps on all three attributes: 24.8 percentage points across customer tier, 7.8 across language
+fluency and 6.9 across region, against a condition of five. Part of that is uneven degradation
+during the run, but the tier gap is too large to attribute to that alone. This is now a
+finding rather than a risk, and it is the one to act on first.
+
+**Confirmed, and the mitigation held.**
+
+R07 (model provider outage stops support entirely) occurred three times in different forms:
+one provider retired the model, a second had no equivalent model available to the key, and the
+third rate-limited to exhaustion mid-run. In every case the system degraded and completed.
+Thirty-four of eighty tickets in the final run were processed on the deterministic path, and
+every one of them escalated with a context package rather than being answered. Zero automated
+replies came out of degraded operation, which is the property the mitigation claimed.
+
+R02 (private data leaks into a reply) recorded zero detections and zero releases across every
+run. The control has not been exercised in anger, so this is an absence of evidence rather
+than evidence of absence.
+
+**Not yet testable.**
+
+R01 (the system answers confidently and incorrectly) remains the largest residual risk and the
+evaluation cannot settle it. Grounding and citation resolution are proxies; no human read a
+sample of sent replies. R11 (agents stop reading escalations) requires a deployment to observe
+at all.
+
+**A risk the register missed.**
+
+Retrieval returning something for every query was not on the register, and it should have
+been. The relevance floor was silently ineffective for an entire evaluation run: passages were
+returned for 100 per cent of tickets the labels said were unanswerable, and the documentation
+gap report — a named business output — came out empty without anything failing. It was caught
+by a test rather than by the register.
+
+The lesson for the register itself is that it listed risks about the system producing wrong
+output and none about the system producing no output while appearing to work. A control that
+fails open and silent is a category this register did not have.
+
 ## 3. Decision logging
 
 ### Why it is designed on day one

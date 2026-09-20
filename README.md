@@ -48,13 +48,13 @@ The four numbered folders are the submission structure mandated by
 `00_Provided_Pack/04_Submission/Submission_Guide.docx`, in the prescribed order
 and with the prescribed names.
 
-| Folder | Contents | Status |
-|---|---|---|
-| [`01_Video/`](01_Video/) | The twenty-minute recording, or a link to it. Currently holds the shot-by-shot script. | script ready, not yet recorded |
-| [`02_Report/`](02_Report/) | The report as a single PDF. `drafts/` holds the source material it is assembled from. | drafts complete, PDF pending |
-| [`03_Workbooks/`](03_Workbooks/) | The five completed stage workbooks and the effort log. | Stage 1 complete; 2–5 pending |
-| [`04_Source_Code/`](04_Source_Code/) | The complete runnable repository. | complete, 48 tests passing |
-| [`00_Provided_Pack/`](00_Provided_Pack/) | The capstone pack exactly as supplied — brief, specifications, templates, datasets. | reference input |
+| Folder                                   | Contents                                                                               | Status                         |
+| ---------------------------------------- | -------------------------------------------------------------------------------------- | ------------------------------ |
+| [`01_Video/`](01_Video/)                 | The twenty-minute recording, or a link to it. Currently holds the shot-by-shot script. | script ready, not yet recorded |
+| [`02_Report/`](02_Report/)               | The report as a single PDF. `drafts/` holds the source material it is assembled from.  | drafts complete, PDF pending   |
+| [`03_Workbooks/`](03_Workbooks/)         | The five completed stage workbooks and the effort log.                                 | Stage 1 complete; 2–5 pending  |
+| [`04_Source_Code/`](04_Source_Code/)     | The complete runnable repository.                                                      | complete, 48 tests passing     |
+| [`00_Provided_Pack/`](00_Provided_Pack/) | The capstone pack exactly as supplied — brief, specifications, templates, datasets.    | reference input                |
 
 `00_Provided_Pack/` is committed so the work is reproducible from a single
 clone: the analysis scripts read the datasets, and the claims in the report can
@@ -69,7 +69,7 @@ excludes it.
 python 04_Source_Code/scripts/build_submission.py
 ```
 
-Produces `BalakumaranSV_Capstone_Submission.zip` containing exactly the four
+Produces `BalaKumaranSV_Capstone_Submission.zip` containing exactly the four
 mandated folders, and prints the final checklist from the submission guide with
 each item marked against what is actually present.
 
@@ -89,7 +89,7 @@ Reading order, if you want to follow the argument rather than the code:
    — the system, and the one part of it that is unusual.
 4. **[`02_Report/drafts/governance_framework.md`](02_Report/drafts/governance_framework.md)**
    — risk register, fairness audit, decision logging, incident procedure, kill
-   switch, and a list of what is *not* implemented.
+   switch, and a list of what is _not_ implemented.
 5. **[`02_Report/drafts/PRD_revision_log.md`](02_Report/drafts/PRD_revision_log.md)**
    — what version one got wrong.
 

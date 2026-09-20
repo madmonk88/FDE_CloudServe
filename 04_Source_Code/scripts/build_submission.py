@@ -25,7 +25,7 @@ import sys
 import zipfile
 from pathlib import Path
 
-STUDENT_NAME = "BalakumaranSV"
+STUDENT_NAME = "BalaKumaranSV"
 
 MANDATED_FOLDERS = ["01_Video", "02_Report", "03_Workbooks", "04_Source_Code"]
 
